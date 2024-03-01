@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+            xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en">
+<head th:fragment="headerfiles">
+    <meta charset="UTF-8">
+    <title>SportsWearShop</title>
+    <link th:href="@{~/bootstrap.min.css}" rel="stylesheet" href="bootstrap.min.css">
+    <link th:href="@{~/fontawesome/css/all.css}" rel="stylesheet" href="/fontawesome/css/all.css">
+</head>
+<body>
+<div th:fragment="nav">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="d-flex flex-grow-1 align-items-center">
+            <a class="navbar-brand d-none d-lg-inline-block"
+               th:href="@{~/}"><img src="/images/shoplogo.jpg"
+            height="50" alt="logo"></a>
+        </div>
+
+        <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar">
+<form class="form-inline" th:action="@{~/search}">
+<div class="input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+    </div>
+    <input id="query" class="form-control col-sm-8" placeholder="Search item..." th:name="query" th:value="${query}" type="text" minlength="4">
+</div>
+    <ul class="navbar-nav ml-auto flex-nowrap">
+        <li class="nav-item">
+            <a class="nav-link m-2 menu-item nav-action" href="#" th:href="@{~/}"><i class="fa fa-home">Home</i></a>        <!--ссылка на домашнюю стр доступна из любой локации сайта-->
+        </li>
+
+        <li class="nav-item">
+            <a sec:authorize="hasRole('ROLE_ADMIN')" class="nav-link m-2 menu-item" href="#" th:href="@{~/admin/adminhome}">
+                <i class="fas fa-toolbox" aria-hidden="true"></i> Admin
+            </a> <!--для роли админ-->
+        </li>
+
+        <li class="nav-item">
+            <a sec:authorize="hasRole('ROLE_USER')" class="nav-link m-2 menu-item" href="#" th:href="@{~/user/orderHistory}">
+                <i class="fa fa-user" aria-hidden="true"></i>My completed orders
+            </a> <!--для роли юзер-история заказов-->
+        </li>
+
+        <li class="nav-item">
+            <a sec:authorize="hasRole('ROLE_USER')" class="nav-link m-2 menu-item" href="#" th:href="@{~/shoppingCart}">
+                <i class="fas fa-shopping-cart"></i>Cart
+            </a> <!--для роли юзер-корзина заказов-->
+        </li>
+
+        <li class="nav-item">
+            <a  class="nav-link m-2 menu-item" href="#">
+                About our e-shop
+            </a> <!--навигационный значок-переносит во внутренний ресурс-информация о магазине-->
+        </li>
+
+        <li class="nav-item">
+            <div  class="nav-link m-2 menu-item" sec:authorize="isAuthenticated()">
+            Welcome
+                <span sec:authentication="name"><strong>Anonymous</strong></span>
+            </div> <!--данные которые отображаются только что аутенфицированному пользователю-->
+        </li>
+
+        <li>
+            <div  class="nav-link m-2 menu-item">
+                <form form-method="post" th:action="@{/logout}">
+                    <button sec:authorize="isAuthenticated()"
+                            type="submit"
+                            class="btn btn-outline-secondary">Logout</button>
+                </form>
+
+                <form form-method="post" th:action="@{/login}">
+                    <button sec:authorize="isAnonymous()"
+                            th:href="@{/login}"
+                            type="submit"
+                            class="btn btn-outline-secondary">Sign In</button>
+                </form>
+            </div> <!--кнопки login и logout-->
+        </li>
+    </ul>
+</form>
+        </div>
+    </nav>
+</div>
+
+<!--ссылки на внутренние ресурсы в футере-->
+
+<div th:fragment="footer">
+    <div class="container">
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <div class="row">
+                <div class="col-12 col-md">
+                    <img src="/images/shoplogo.jpg" alt="" height="28">
+                    <small class="d-block md-3 text-muted">® 2022-2023</small>
+                </div>
+
+                <div class="col-6-col-md">
+                    <h5>Info</h5>
+                    <ul class="list-unstyled text-small">
+                        <li><a class="text-muted" href="#">Contact</a></li>
+                        <li><a class="text-muted" href="#">Site info</a></li>
+                        <li><a class="text-muted" href="#">Team info</a></li>
+                        <li><a class="text-muted" href="#">Dev</a></li>
+                        <li><a class="text-muted" href="#">Legal</a></li>
+                        <li><a class="text-muted" href="#">Some info</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6-col-md">
+                    <h5>Resources</h5>
+                    <ul class="list-unstyled text-small">
+                        <li><a class="text-muted" href="#">Resource</a></li>
+                        <li><a class="text-muted" href="#">Name</a></li>
+                        <li><a class="text-muted" href="#">Resource info</a></li>
+                        <li><a class="text-muted" href="#">Resource description</a></li>
+
+                    </ul>
+                </div>
+
+                <div class="col-6-col-md">
+                    <h5>Info</h5>
+                    <ul class="list-unstyled text-small">
+                        <li><a class="text-muted" href="#">E-shop team</a></li>
+                        <li><a class="text-muted" href="#">Locations</a></li>
+                        <li><a class="text-muted" href="#">Privacy</a></li>
+                        <li><a class="text-muted" href="#">Like</a></li>
+                        <li>
+                            <a href="#" class="text-muted"><i class="fab fa fa-vk" style="font-size: 1.5rem; margin: 4px"></i></a>
+                        </li>
+
+                    </ul>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

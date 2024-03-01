@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en">
+<head th:insert="fragments.html :: headerfiles">
+</head>
+<body>
+<header th:insert="fragments.html :: nav"></header>
+<br><br>
+
+<div class="container">
+    <div th:unless="${newUser}"> <!--если это не новый пользователь, то происходит процедура логирования-->
+        <div th:if="${userInfo}" class="alert-secondary alert" role="alert">
+            <h3 th:text="${userInfo}"></h3>
+        </div>
+        <div class="row">
+            <div class="col-sm-9 col-sm-7 col-lg-5 mx-auto">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Sign In</h5>
+                    <form class="form-signin" name="f" th:action="@{/login}" method="post">
+
+                        <div th:if="${param.error}" class="alert alert-danger">
+                            Invalid username or Password
+                        </div>
+
+                        <div th:if="${param.logout}" class="alert alert-success">
+                            Logging out was successfully
+                        </div>
+
+                    <div class="form-label-group">
+                        <input type="text" class="form-control"
+                        id="username" placeholder="Username" required="true">
+                        <hr class="my-4">
+                        <input type="text" class="form-control"
+                               id="password" placeholder="Password" required="true">
+                        <hr class="my-4">
+                    </div>
+                    <button class="btn-lg btn-outline-secondary btn-block text-uppercase" type="submit">Sign In</button>
+                    <hr class="my-4">
+                    </form>
+                    <a href="/register" style="text-decoration: navajowhite">
+                        <button class="btn-lg btn-outline-secondary btn-block text-uppercase"
+                                type="submit"><i class="fa-sign-in mt-2"></i>Register</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:if="${newUser}">  <!--если это новый пользователь, то происходит регистрация-->
+        <div th:if="${userInfo}" class="alert-secondary alert" role="alert">
+            <h4 th:text="${userInfo}"></h4>
+        </div>
+            <div class="col-sm-9 col-sm-7 col-lg-5 mx-auto">
+                <div class="card-card-signin my-5">
+                    <div class="card-body"></div>
+
+                    <h5 class="card-title text-center">Sign Up</h5>
+                    <form name="r" th:action="@{/reg}" th:object="${newUser}" method="post">
+
+
+
+                    <div class="form-label-group">
+                        <input th:field="*{username}" type="text" class="form-control"
+                               id="regusername" name="regusername" placeholder="Username" required="true" minlength="4">
+                        <hr class="my-4">
+
+                        <input type="password" th:field="*{password}"  class="form-control"
+                               id="regpassword" name="regpassword" placeholder="Password" required="true" minlength="4">
+                        <hr class="my-4">
+
+                        <input type="email" th:field="*{email}"  class="form-control"
+                               id="email" name="email" placeholder="Email" required="true" minlength="5">
+
+                    </div>
+                        <hr class="my-4">
+                    <button class="btn-lg btn-outline-secondary btn-block text-uppercase" type="submit">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+    </div>
+
+</div>
+</body>
+</html>
+
+
+<!--атрибуты подтягиваются из класса SecurityController-->

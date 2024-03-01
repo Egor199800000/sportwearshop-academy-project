@@ -1,0 +1,332 @@
+$-переменная выражения th:"${...}"
+text-атрибут будет подставлен в тело тега th:text="${...}"
+
+ОБРАЩЕНИЕ К ПОЛЮ ОБЪЕКТА
+<p class="card-text" th:text="${item.category}">...</p> -переменная будет вставленна в тег p -на фронте этот атрибут передан с именем item model.addAttribute("item",item);
+-то что в ковычках это имя веб контекста, в таймлиф шаблоне идет обращение к нему
+точка (.) означает неявный вызов метода get (getCategory)
+
+ОБРАЩЕНИЕ К МЕТОДУ ОБЪЕКТА
+ТОЖЕ САМОЕ КАК И С ПОЛЕМ ТОЛЬКО ВМЕСТО ПОЛЯ ПОЛНОЕ ИМЯ МЕТОДА ЭТОГО ОБЪЕКТА
+НАПРИМЕР
+<p th:text="${employee.getFullName()}">Nothing</p>
+
+ОБРАЩЕНИЕ К СВОЙСТВАМ ЧЕРЕЗ КВАДРАТНЫЕ СКОБОЧКИ
+\<p class="card-text" th:text="${item['category']}">...</p>
+
+ПЕРЕДАЕМ МАПУ В ШАБЛОН:
+добавление аттрибута на беке, указываем имя и гетер (какойто) мапы
+model.addAttribute("employeeMap",getMapWidthEmployees);
+
+<p class="card-text" th:text="${employeeMap['Peter'].email}">...</p>
+либо так
+<p class="card-text" th:text="${employeeMap.Peter.email}">...</p>
+
+ПЕРЕДАЕМ ЛИСТ В ШАБЛОН:
+добавление аттрибута на беке, указываем имя и гетер (какого-то) листа
+model.addAttribute("employeeList",getListOfEmployees);
+
+<p class="card-text" th:text="${employeeList[2].email}">...</p> вывод в теге 3 элемента листа
+
+
+АСТЕРИСК СИНТАКСИС *{...}
+так же как и выражение переменных он может обр  свойства объекта и переменные контекста,
+дает возможность работать в данном скоупе (например в скоупе див-контейнера)
+
+например, в скоупе дива мы имеем возможность работать с объектом item
+<div class="jumbotron" th:object="${item}">
+.....это скоуп
+
+обращение к полям без asterisk
+<h1 th:text="${item.name}">Name</h1>
+        <hr>
+        <h4 th:text="'Brand'+${item.brand}">Brand</h4> идет вывод свойств этого конкретного item
+        <h4 th:text="'Category'+${item.category}">Category</h4>
+        <hr>
+
+        обращение к полям c asterisk
+        <hr>
+        <h4 th:text="'Brand'+*{brand}">Brand</h4> идет вывод свойств этого конкретного item
+        <h4 th:text="'Category'+*{category}">Category</h4>
+        <hr>
+</div>
+
+
+
+Линк , урлы или ссылки @{....}-с помощью данного синтаксиса можно
+создавать абсолютные и относительные url
+использовать данный синтаксис можно с атрибутами th:href и th:action
+
+https://www.youtube.com/watch?v=NrTbzfeJcwc&list=PLvItDmb0sZw8XfMcTMXz-s4sBV8Z08KKu -15 минута
+
+<li>
+            <div  class="nav-link m-2 menu-item">
+                <form form-method="post" th:action="@{/logout}">
+                    <button sec:authorize="isAuthenticated()"
+                            type="submit"
+                            class="btn btn-outline-secondary">Logout</button>
+                </form>
+
+                <form form-method="post" th:action="@{/login}">
+                    <button sec:authorize="isAnonymous()"
+                            th:href="@{/login}"
+                            type="submit"
+                            class="btn btn-outline-secondary">Sign In</button>
+                </form>
+            </div> <!--кнопки login и logout-->
+        </li>
+
+
+
+Message expressions-мессаджи позволяют вытягивать файлы которые хранятся отдельно от наших шаблонов
+#{...}
+с его помощью можно менять сообщения, используется с аттрибутами th:text
+и th:utext-тоже самое что и th:text только спецсимволы на выводе будут не экранированы
+
+например: <p th:text="#{spring.mail.username}">...</p> выведется значение переменной из проперти файла vergil.corran@foundtoo.com
+если используем тег с неэкронированием, то то что заключено в теги (в значении переменной проперти файла)то выведется жирным шрифтом
+
+Fragment expression ~{...} (лямбда и фигурные скобки)
+работает в связке с атрибутами th:insert и th:include оба атрибута выполняют одно и тоже-добавляют фрагменты кода сославшись только на их название
+
+
+
+ЛИТЕРАЛЫ
+---------------------------------------------------------------
+
+ТЕКСТОВЫЕ ЛИТЕРАЛЫ:
+<span style="..." th:text="${'kakoyto text'+'i kakoyto text'}"></span> -обычная канкатенация строк
+
+ literal substitution-текстовая подмена
+<span style="..." th:text="|10|></span>-все что помещено в вертикальные черточки будет приведено в текст форму
+
+
+ТЕКСТОВЫЕ ЛИТЕРАЛЫ СРАВНЕНИЯ И АРИФМЕТИЧЕСКИЕ ОПЕРАЦИИ:
+<span style"..." th:text="${5 > 3}"></span> -true
+<span style"..." th:text="${5 gt 3}"></span> -true тоже самое что и >
+<span style"..." th:text="${3 == 3}"></span> -true
+<span style"..." th:text="${3 * 3}"></span> - 9
+<span style"..." th:text="${9 / 3}"></span> - 3
+
+ТЕРНАРНЫЕ  ОПРЕАТОРЫ
+<span style"..." th:text="${item !=null ? greetings : null}"></span> -если не является null то выводим результат из переменной greetings проперти файла, если является то выводим null
+
+
+
+АТРИБУТЫ
+---------------------------------------------------------------
+1. th:attr  данный аттрибут позволяет создавать аттрибуты (которые объявляются на беке) и добавлять к ним значения
+например <input id="thatter" th:attr="value=${defaultName}"/> создаем атрибут value и выведется его значение defaultName-а
+ИЛИ добавление нескольких аттрибутов <input id="thatter2" th:attr="value=${defaultName}, style='color:blue'"/>
+
+
+2.th:each-позволяет проходится по всем элементом объекта которой наследует интерфейс iterable
+та же функция что и цикл for в java
+
+th:each="image : ${item.imagesPaths()}" image-переменная итерации, item.imagesPaths()-итерируемое выражение-наша папка с картинками
+
+(добавление картинок для товара)
+<div class="row mx-md-n5 align-items-center">
+            <div th:unless="${item.getImages().isEmpty()}" th:each="image : ${item.imagesPaths()}"
+                 style="width: 100%; max-width: 300px; heigth: 100%;  max-height: 300px; margin: 4px">
+                <div class="col px-md-5">
+                    <a th:onclick="|viewFunc(${image.hashCode()})|" style="cursor: pointer">
+                        <img class="img-thumbnail" th:src="${image}" alt="item" src="images/profile.png">
+                    </a>
+                </div>
+                <div class="modal fade" role="dialog" th:id="${image.hashCode()}"
+                     th:onclick="|closeFunc(${image.hashCode()})|"
+                     style="display: none; opacity: 100%; padding-top: 10%">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" tabindex="-1" aria-hidden="false">
+                        <div class="modal-content" style="position: absolute; width: auto">
+                            <span class="close" th:onclick="|closeFunc(${image.hashCode()})|" onclick="">X</span>
+                            <div class="modal-body">
+                                <img th:src="${image}" style="height: 100%; max-height: 300px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+итерация с индексом 31:00  https://www.youtube.com/watch?v=NrTbzfeJcwc&list=PLvItDmb0sZw8XfMcTMXz-s4sBV8Z08KKu
+
+3. th:if-если выражение item.images.isEmpty()=true то выведется все что внутри тега
+
+<div th:if="${item.images.isEmpty()}">
+            <div class="col px-md-5">
+                <a target="_blank" href="../images/profile.png">
+                    <img class="img-thumbnail" alt="item" src="/images/profile.png" style="width: 20%; height: 20%;">
+                </a>
+            </div>
+        </div>
+
+
+4. th:unless- если выражение item.getImages().isEmpty()=false то выведется все что внутри тега
+
+ <div th:unless="${item.getImages().isEmpty()}" th:each="image : ${item.imagesPaths()}"
+                 style="width: 100%; max-width: 300px; heigth: 100%;  max-height: 300px; margin: 4px">
+                <div class="col px-md-5">
+                    <a th:onclick="|viewFunc(${image.hashCode()})|" style="cursor: pointer">
+                        <img class="img-thumbnail" th:src="${image}" alt="item" src="images/profile.png">
+                    </a>
+                </div>
+                <div class="modal fade" role="dialog" th:id="${image.hashCode()}"
+                     th:onclick="|closeFunc(${image.hashCode()})|"
+                     style="display: none; opacity: 100%; padding-top: 10%">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" tabindex="-1" aria-hidden="false">
+                        <div class="modal-content" style="position: absolute; width: auto">
+                            <span class="close" th:onclick="|closeFunc(${image.hashCode()})|" onclick="">X</span>
+                            <div class="modal-body">
+                                <img th:src="${image}" style="height: 100%; max-height: 300px">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+5. th:switch-тоже самое что и switch-case в java
+
+<div id:"thswitch" th:switch="${employeeList[0].gender.toString()}"> -проверяем первый элемент из списка
+<p th:case="'MALE'">Employee is a man</p>
+<p th:case="'FAMALE'">Employee is a woman</p>
+</div>
+
+
+6. th:onclick -данный атрибут позволяет вызывать javaScript методы которые объявлены в данном html файле или во внешнем
+
+
+      <div class="modal fade" role="dialog" th:id="${item.id}" th:onclick="|closeFunc(${item.id})|" -вызывается javascript метод и его результат выведется в виде текста
+                 style="display: none; opacity: 100%; padding-top: 10%">
+                <div class="modal-dialog modal-lg modal-dialog-centered" tabindex="-1" aria-hidden="true">
+                    <div class="modal-content" style="position: absolute; width: auto">
+                        <span class="close" th:onclick="|closeFunc(${item.id})|" onclick="">X</span>
+                        <div class="modal-body">
+                            <div th:if="${item.images.isEmpty()}">
+                                <img src="images/profile.png">
+                            </div>
+                            <div th:unless="${item.images.isEmpty()}">
+                                <img th:src="${item.images.get(0).getDecodedImgPath()}"
+                                     style="height: 100%; max-height: 300px;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+
+<script>
+// закрытие и открытие модального окна
+        function viewFunc(id) {
+            let model = document.getElementById(id);
+            if (model.style.display === "none"){
+                model.style.display==="block";
+            }
+        }
+
+        function closeFunc(id) {
+            let model = document.getElementById(id);
+            if (model.style.display === "block"){
+                model.style.display==="none";
+            }
+        }
+    </script>
+
+
+7. th:block 38:00 https://www.youtube.com/watch?v=NrTbzfeJcwc&list=PLvItDmb0sZw8XfMcTMXz-s4sBV8Z08KKu
+
+
+АТРИБУТЫ ДЛЯ SPRING
+-----------------------------------------------------------------------
+th:field
+th:errors
+th:errorclass
+
+новый синтаксис для от thymeleaf для spring
+${@myBean.doSomething()} -название компонента и его публичный метод, то что после @ это компонент спринга (любой-сервис, репозитолрий и т д)
+
+
+
+
+
+ФИЧИ THYMELEAF
+
+[[...]] = th:text=  двойные квадратные скобки соответствуют th:text
+[(...)] = th:utext=
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

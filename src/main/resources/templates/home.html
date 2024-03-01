@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:opacity="http://www.w3.org/1999/xhtml" xmlns:padding-top="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head th:insert="fragments.html :: headerfiles">
+    <script>
+// закрытие и открытие модального окна
+        function viewFunc(id) {
+            let model = document.getElementById(id);
+            if (model.style.display === "none"){
+                model.style.display==="block";
+            }
+        }
+
+        function closeFunc(id) {
+            let model = document.getElementById(id);
+            if (model.style.display === "block"){
+                model.style.display==="none";
+            }
+        }
+    </script>
+</head>
+<body>
+<header th:insert="fragments.html :: nav"></header>
+<br><br>
+<div class="container">
+    <div th:if="${checkoutSucces}" class="alert alert-secondary" role="alert">
+        <h5 class="alert-heading"><i class="fas fa-shopping-cart"></i>Order done!!!</h5>
+        <br>
+        <h6 th:text="'Number of items in order: '+ ${checkoutSuccess2}"></h6>
+        <strong><h5 th:text="'Total price of item in order: '+${checkoutSuccess}"></h5></strong>
+        <hr>
+        <h5 class="mb-0">Thank you for order!</h5>
+    </div>
+</div>
+
+<div class="container jumbotron">
+    <div th:if="${welcome}" class="alert-secondary alert" role="alert">
+        <h3 th:text="${welcome}"></h3>
+    </div>
+    <form th:action="@{/sort}" method="get"> <!--HomeController.indexWithQuery()-->
+        <div class="form-group row">
+            <label for="field" class="column-sm-2 col-form-label"><h5>Order by</h5></label>
+            <select class="form-control col-sm-3" id="field" onchange="this.form.submit()">
+                <option th:selected="${field=='name'}" value="name">Name</option>
+                <option th:selected="${field=='brand'}" value="brand">Brand</option>
+                <option th:selected="${field=='category'}" value="category">Category</option>
+                <option th:selected="${field=='recent'}" value="recent">Recently added</option>
+                <option th:selected="${field=='priceAsc'}" value="priceAsc">Price Asc</option>
+                <option th:selected="${field=='priceDesc'}" value="priceDesc">Price Desc</option>
+            </select>
+            <input th:name="query" th:value="${query}" hidden/>
+        </div>
+    </form>
+    <hr>
+    <div th:if="${items.isEmpty()}" class="alert-info">
+        <h3>No matching result</h3>
+    </div>
+    <div class="row mx-md-n5">    <!--карточка товара-->
+        <div class="card" style="width: 20rem; margin: 22px;" th:each="item : ${items}"> <!--ИТЕРИРУЕМСЯ ПО Item-->
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal" th:text="item.name">Product</h4> <!--вызываем на item который попал в нашу итерацию параметр name-->
+            </div>
+            <div th:unless="${item.getImages().isEmpty()}">
+                <a th:id="'a'+${item.id}" th:onclick="|viewFun(${item.id})|" style="cursor:pointer"> <!--в зависимости от id будет отображена та или иная картинка-->
+                    <img th:src="${item.getImages().get(0).getDecodedImgPath()}" src="images/profile.png" class="card-img-top" style="width: 100%; height: 15vw; object-fit: cover;">  <!--ItemImage.getDecodedImgPath()-->
+                </a>
+            </div>
+            <div th:if="${item.getImages().isEmpty()}">
+                <img  src="images/profile.png" alt="Item_Image" class="card-img-top" style="width: 100%; height: 15vw; object-fit: cover;">
+            </div>
+            <div class="card-body">
+                <h5 class="card-title" th:text="${item.brand}">Card title</h5>
+                <p class="card-text" th:text="${item.category}"></p>
+            </div>
+            <div class="card-footer">  <!--добавление в корзину addToCart()-метод в ShoppingCartController -->
+                <a href="#" th:href="@{'item/'+${item.id}}" class="btn btn-outline-dark">Details</a>
+                    <span class="d-inline-block" tabindex="0" data-loggle="tooltip" title="Add to cart">
+                        <a class="btn btn-outline-dark" href="#" th:href="@{'item/addToCart/'+${item.id}}" style="pointer-events: visibleStroke;" type="button">
+                        <i class="fa-shopping-cart"></i>
+                        </a>
+                    </span>
+            </div>
+            <div class="modal fade" role="dialog" th:id="${item.id}" th:onclick="|closeFunc(${item.id})|" style="display: none; opacity: 100%; padding-top: 10%">
+            <div class="modal-dialog modal-lg-centered" tabindex="-1" aria-hidden="true">
+            <div class="modal-content" style="position: absolute; width: auto">
+                    <span class="close" th:onclick="|closeFunc(${item.id})|" onclick="">X</span>
+                        <div class="modal-body">
+                            <div th:if="${item.getImages().isEmpty()}">
+                                <img src="images/profile.jpg">
+                            </div>
+                            <div th:unless="${item.getImages().isEmpty()}">
+                                <img th:src="${item.getImages().get(0).getDecodedImgPath()}"  style="height: 100%; max-height: 300px;">
+                            </div>
+                        </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:insert="fragments.html :: footer" /> <!--инзертим футер из файла fragments.html -->
+
+
+</body>
+</html>
+
+
+
+
+<!--ShoppingCartController-->
+<!--unless-обратный if-->
